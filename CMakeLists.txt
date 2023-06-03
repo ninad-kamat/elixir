@@ -10,5 +10,6 @@ add_subdirectory(src)
 option(ELIXIR_BUILD_TESTS "Build unit tests for Elixir" OFF)
 
 if(ELIXIR_BUILD_TESTS)
+    enable_testing()
     add_subdirectory(tests)
 endif()
