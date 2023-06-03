@@ -1,0 +1,84 @@
+{
+    "version": 5,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 21,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "dev",
+            "hidden": true,
+            "toolchainFile": "${sourceDir}/cmake/dev-toolchain.cmake",
+            "cacheVariables": {
+                "ELIXIR_BUILD_TESTS": true,
+                "ELIXIR_BUILD_GTEST": true,
+                "ELIXIR_GTEST_URL": "https://github.com/google/googletest.git"
+            }
+        },
+        {
+            "name": "windows",
+            "hidden": true,
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "macos",
+            "hidden": true,
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Darwin"
+            }
+        },
+        {
+            "name": "macos-dev-debug",
+            "inherits": [
+                "macos",
+                "dev"
+            ],
+            "binaryDir": "${sourceDir}/build/debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "macos-dev-release",
+            "inherits": [
+                "macos",
+                "dev"
+            ],
+            "binaryDir": "${sourceDir}/build/release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "macos-dev-debug",
+            "configurePreset": "macos-dev-debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "macos-dev-release",
+            "configurePreset": "macos-dev-release",
+            "configuration": "Release"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "macos-dev-debug",
+            "configurePreset": "macos-dev-debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "macos-dev-release",
+            "configurePreset": "macos-dev-release",
+            "configuration": "Release"
+        }
+    ]
+}
