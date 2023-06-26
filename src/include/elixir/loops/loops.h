@@ -1,4 +1,5 @@
 #include "algorithms/enumerate.h"
+#include "algorithms/find_if.h"
 #include "algorithms/for_each.h"
 #include "views/filter.h"
 #include "views/just.h"

@@ -10,6 +10,7 @@ target_sources(
     views/transform_view_tests.cpp
     views/pass_through_view_tests.cpp
     views/range_adapter_tests.cpp
+    algorithms/find_if_tests.cpp
 )
 
 target_link_libraries(
