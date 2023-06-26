@@ -5,7 +5,7 @@
 namespace elixir {
 namespace tests {
 
-TEST(view_tests, pass_through_can_process_loops) {
+TEST(loops_view_tests, pass_through_can_process_loops) {
   int test[5] = {10, 11, 12, 13, 14};
   int count = 0;
   loops::enumerate(loops::pass_through(loops::just(test),
@@ -15,7 +15,7 @@ TEST(view_tests, pass_through_can_process_loops) {
                    [&](auto idx, auto value) { ASSERT_EQ(test[idx], value); });
 }
 
-TEST(view_tests, pass_through_can_be_piped) {
+TEST(loops_view_tests, pass_through_can_be_piped) {
   int test[5] = {10, 11, 12, 13, 14};
   int count = 0;
   loops::enumerate(

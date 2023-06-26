@@ -7,7 +7,7 @@ using namespace elixir;
 namespace elixir {
 namespace tests {
 
-TEST(view_tests, filter_view_can_filter_loops) {
+TEST(loops_view_tests, filter_view_can_filter_loops) {
   int test[5] = {10, 11, 12, 13, 14};
   int expected[1] = {12};
   loops::enumerate(
@@ -15,7 +15,7 @@ TEST(view_tests, filter_view_can_filter_loops) {
       [&](auto idx, auto value) { ASSERT_EQ(expected[idx], value); });
 }
 
-TEST(view_tests, filter_can_pipe_loops) {
+TEST(loops_view_tests, filter_can_pipe_loops) {
   int test[5] = {10, 11, 12, 13, 14};
   int expected[1] = {12};
   loops::enumerate(
