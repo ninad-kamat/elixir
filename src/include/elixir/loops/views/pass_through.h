@@ -45,6 +45,15 @@ class pass_through_view {
     return ref;
   }
 
+  template <typename Processor>
+  constexpr auto loop_until(Processor&& p) {
+    return ::elixir::loops::loop_until(
+        _base, [this, _p = std::forward<Processor>(p)](auto&& ref) {
+          _call(ref);
+          return true;
+        });
+  }
+
  private:
   base_loop_type _base;
   callable_type _call;

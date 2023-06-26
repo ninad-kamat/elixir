@@ -118,6 +118,14 @@ class range_adaptor {
     return ::elixir::loops::deref(_base, i);
   }
 
+  template <typename Processor>
+  constexpr auto loop_until(Processor&& p) {
+    return ::elixir::loops::loop_until(
+        _base, [this, _p = std::forward<Processor>(p)](auto&& ref) {
+          return _p(ref);
+        });
+  }
+
  private:
   base_loop_type _base;
 };

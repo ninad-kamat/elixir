@@ -61,6 +61,19 @@ class filter_view {
     return i;
   }
 
+  template <typename Processor>
+  constexpr auto loop_until(Processor&& p) {
+    return ::elixir::loops::loop_until(
+        _base, [this, _p = std::forward<Processor>(p)](auto&& ref) {
+          if (_pred(ref)) {
+            if (!_p(ref)) {
+              return false;
+            }
+          }
+          return true;
+        });
+  }
+
  private:
   base_loop_type _base;
   predicate_type _pred;

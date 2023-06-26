@@ -72,12 +72,31 @@ struct next_fn {
   }
 };
 
+template <typename Loop, typename Processor>
+constexpr auto loop_until(Loop&& l, Processor&& p) noexcept(
+    noexcept(std::forward<Loop>(l).loop_until(std::forward<Processor>(p))))
+    -> decltype(std::forward<Loop>(l).loop_until(std::forward<Processor>(p))) {
+  return std::forward<Loop>(l).loop_until(std::forward<Processor>(p));
+}
+
+struct loop_until_fn {
+  template <typename Loop, typename Processor>
+  constexpr auto operator()(Loop&& l, Processor&& p) const
+      noexcept(noexcept(loop_until(std::forward<Loop>(l),
+                                   std::forward<Processor>(p))))
+          -> decltype(loop_until(std::forward<Loop>(l),
+                                 std::forward<Processor>(p))) {
+    return loop_until(std::forward<Loop>(l), std::forward<Processor>(p));
+  }
+};
+
 }  // namespace __impl
 
 constexpr auto iter = __impl::iter_fn{};
 constexpr auto valid = __impl::valid_fn{};
 constexpr auto deref = __impl::deref_fn{};
 constexpr auto next = __impl::next_fn{};
+constexpr auto loop_until = __impl::loop_until_fn{};
 
 }  // namespace loops
 }  // namespace elixir

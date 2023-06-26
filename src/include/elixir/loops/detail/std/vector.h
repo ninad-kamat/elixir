@@ -32,10 +32,20 @@ struct range_traits<std::vector<T, Alloc>, void> {
   static reference deref(std::vector<T, Alloc>& vec, index_type idx) {
     return vec[idx];
   }
-  static index_type next(index_type i, difference_type offset = 1) noexcept {
-    return i + offset;
+  static index_type next(std::vector<T, Alloc>&, index_type i) noexcept {
+    return i + 1;
   }
-  static index_type iter(std::vector<T, Alloc>& vec) { return 0; }
+  static index_type iter(std::vector<T, Alloc>&) { return 0; }
+
+  template <typename Processor>
+  static std::size_t loop_until(std::vector<T, Alloc>& vec, Processor&& p) {
+    auto i = iter(vec);
+    for (; valid(vec, i); i = next(vec, i)) {
+      auto& ref = deref(vec, i);
+      if (!std::forward<Processor>(p)(ref)) break;
+    }
+    return i;
+  }
 };
 
 template <typename T, typename Alloc>
@@ -57,10 +67,21 @@ struct range_traits<std::vector<T, Alloc> const, void> {
   static reference deref(std::vector<T, Alloc> const& vec, index_type idx) {
     return vec[idx];
   }
-  static index_type next(index_type i, difference_type offset = 1) noexcept {
-    return i + offset;
+  static index_type next(std::vector<T, Alloc> const&, index_type i) noexcept {
+    return i + 1;
   }
-  static index_type iter(std::vector<T, Alloc> const& vec) { return 0; }
+  static index_type iter(std::vector<T, Alloc> const&) { return 0; }
+
+  template <typename Processor>
+  static std::size_t loop_until(std::vector<T, Alloc> const& vec,
+                                Processor&& p) {
+    auto i = iter(vec);
+    for (; valid(vec, i); i = next(vec, i)) {
+      auto& ref = deref(vec, i);
+      if (!std::forward<Processor>(p)(ref)) break;
+    }
+    return i;
+  }
 };
 
 }  // namespace loops

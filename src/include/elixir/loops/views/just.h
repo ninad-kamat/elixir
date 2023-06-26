@@ -41,8 +41,15 @@ class just_view<
     return traits::deref(_base, i);
   }
 
-  constexpr index_type next(index_type i) noexcept(noexcept(traits::next(i))) {
-    return traits::next(i);
+  constexpr index_type next(index_type i) noexcept(noexcept(traits::next(_base,
+                                                                         i))) {
+    return traits::next(_base, i);
+  }
+
+  template <typename Processor>
+  constexpr auto loop_until(Processor&& p) noexcept(
+      noexcept(traits::loop_until(_base, std::forward<Processor>(p)))) {
+    return traits::loop_until(_base, std::forward<Processor>(p));
   }
 
  private:

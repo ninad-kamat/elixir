@@ -57,10 +57,18 @@ struct range_traits<T[N], void> {
   static size_type size(T (&x)[N]) noexcept { return N; }
   static bool valid(T (&x)[N], index_type i) noexcept { return i < N; }
   static reference deref(T (&x)[N], index_type idx) { return x[idx]; }
-  static index_type next(index_type i, difference_type offset = 1) noexcept {
-    return i + offset;
-  }
+  static index_type next(T (&x)[N], index_type i) noexcept { return i + 1; }
   static index_type iter(T (&x)[N]) { return 0; }
+
+  template <typename Processor>
+  static std::size_t loop_until(T (&x)[N], Processor&& p) {
+    auto i = iter(x);
+    for (; valid(x, i); i = next(x, i)) {
+      auto& ref = deref(x, i);
+      if (!std::forward<Processor>(p)(ref)) break;
+    }
+    return i;
+  }
 };
 
 template <typename T, std::size_t N>
@@ -75,10 +83,20 @@ struct range_traits<const T[N], void> {
   static size_type size(const T (&x)[N]) noexcept { return N; }
   static bool valid(const T (&x)[N], index_type i) noexcept { return i < N; }
   static reference deref(const T (&x)[N], index_type idx) { return x[idx]; }
-  static index_type next(index_type i, difference_type offset = 1) noexcept {
-    return i + offset;
+  static index_type next(const T (&x)[N], index_type i) noexcept {
+    return i + 1;
   }
   static index_type iter(const T (&x)[N]) { return 0; }
+
+  template <typename Processor>
+  static std::size_t loop_until(const T (&x)[N], Processor&& p) {
+    auto i = iter(x);
+    for (; valid(x, i); i = next(x, i)) {
+      auto& ref = deref(x, i);
+      if (!std::forward<Processor>(p)(ref)) break;
+    }
+    return i;
+  }
 };
 
 }  // namespace loops

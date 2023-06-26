@@ -45,6 +45,14 @@ class transform_view {
     return _map(::elixir::loops::deref(_base, i));
   }
 
+  template <typename Processor>
+  constexpr auto loop_until(Processor&& p) {
+    return ::elixir::loops::loop_until(
+        _base, [this, _p = std::forward<Processor>(p)](auto&& ref) {
+          return _p(map(ref));
+        });
+  }
+
  private:
   base_loop_type _base;
   transform_type _map;
