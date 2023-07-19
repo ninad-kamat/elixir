@@ -76,12 +76,12 @@ for (auto* iter = a; iter != iter_end; ++iter) {
 
 Can you see the subtle difference in these two? In the _iterator_ model, all the logic of
 performing the iteration is largely placed in the _iterator_ (pointer-like) object. I have
-intentionally defined the iter*end object outside the loop here as with \_iterators*, you
+intentionally defined the `iter_end` object outside the loop here as with _iterators_, you
 only have equality comparison with other _iterators_. C++17 did give us the _sentinel_, but
 that is just a workaround to the fundamental problem with _iterators_.
 
 On the other hand, with _Loops_, the logic of iteration lies with the _Loop_ itself. This
-means an _index_ does not carry much logic. In fact, in most cases it is a pod type like
+means an _index_ does not carry much logic. In fact, in most cases it is a POD type like
 `std::size_t`. Further, this _index_ can be used over multiple _loops_. Each _loop_
 understands how it should react to a particular position in its sequence. This significantly
 reduces code for implementation. Unlike `ranges` where you probably implement and `iterator`
@@ -90,9 +90,8 @@ and a `view` object, here you just implement the `loop` object.
 Another key difference is that in _Loops_, the _index_ is exactly the same for all components
 of the pipeline. On the contrary, in ranges, an _iterator_ typically will contain the underlying
 _iterator_ and a pointer or reference to the _view_; and the _view_ will also encapsulate the
-underlying _view_ object. This is rather redundant use of the stack. _Loops_ are far more
-efficient with the stack. Each _loop_ encapsulates the underlying _loop_, but since we use simple
-_index_ type, we do not need to do anything else.
+underlying _view_ object. _Loops_ are far more efficient with the stack. Each _loop_ encapsulates
+the underlying _loop_, but since we use simple _index_ type, we do not need to do anything else.
 
 Let us consider an example of how a simple C array can be conceptually thought of as a _loop_
 
