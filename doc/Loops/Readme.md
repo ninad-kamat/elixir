@@ -95,7 +95,7 @@ the underlying _loop_, but since we use simple _index_ type, we do not need to d
 
 Let us consider an example of how a simple C array can be conceptually thought of as a _loop_
 
-> \***\*NOTE**:\*\* This is not how an actual _loop_ is implemented on C arrays but more of a
+> **NOTE:** This is not how an actual _loop_ is implemented on C arrays but more of a
 > conceptual discussion.
 
 ```cpp
