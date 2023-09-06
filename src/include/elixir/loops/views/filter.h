@@ -2,37 +2,28 @@
 #define ELIXIR_LOOPS_FILTER_VIEW
 
 #include "elixir/base/config.h"
+#include "elixir/loops/detail/concepts.h"
 #include "elixir/loops/detail/operations.h"
 
 namespace elixir {
 namespace loops {
 
 template <typename Loop, typename Predicate>
-class filter_view;
-
-template <typename Loop, typename Predicate>
-struct is_loop<filter_view<Loop, Predicate>> : public std::true_type {};
-
-template <typename Loop, typename Predicate>
+  requires loop<Loop>
 class filter_view {
  public:
   using base_loop_type = Loop;
   using predicate_type = Predicate;
-  using traits = loop_traits<base_loop_type>;
-  using reference = typename traits::reference;
-  using pointer = typename traits::pointer;
-  using value_type = typename traits::value_type;
-  using index_type = typename traits::index_type;
+  using index_type = typename loops::index_t<base_loop_type>;
+  using reference = typename loops::reference_t<base_loop_type>;
 
   constexpr filter_view(Loop&& base, Predicate&& p) noexcept
-      : _base(std::forward<Loop>(base)), _pred(std::forward<Predicate>(p)) {
-    static_assert(is_loop_v<Loop>, "Base loop for filter is not a elixir loop");
-  }
+      : _base(std::forward<Loop>(base)), _pred(std::forward<Predicate>(p)) {}
 
   constexpr index_type iter() noexcept {
     auto i = ::elixir::loops::iter(_base);
     do {
-      auto& ref = ::elixir::loops::deref(_base, i);
+      auto&& ref = ::elixir::loops::deref(_base, i);
       if (_pred(ref)) {
         break;
       }
@@ -52,7 +43,7 @@ class filter_view {
   constexpr index_type next(index_type i) noexcept {
     i = ::elixir::loops::next(_base, i);
     do {
-      auto& ref = ::elixir::loops::deref(_base, i);
+      auto&& ref = ::elixir::loops::deref(_base, i);
       if (_pred(ref)) {
         break;
       }

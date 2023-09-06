@@ -2,34 +2,24 @@
 #define ELIXIR_LOOPS_PASS_THROUGH
 
 #include "elixir/base/config.h"
+#include "elixir/loops/detail/concepts.h"
 #include "elixir/loops/detail/operations.h"
 
 namespace elixir {
 namespace loops {
 
 template <typename Loop, typename Callable>
-class pass_through_view;
-
-template <typename Loop, typename Callable>
-struct is_loop<pass_through_view<Loop, Callable>> : public std::true_type {};
-
-template <typename Loop, typename Callable>
+  requires loop<Loop>
 class pass_through_view {
  public:
   using base_loop_type = Loop;
   using callable_type = typename std::decay<Callable>::type;
-  using traits = loop_traits<base_loop_type>;
-  using index_type = typename traits::index_type;
-  using reference = typename traits::reference;
-  using value_type = typename traits::value_type;
-  using pointer = typename traits::pointer;
+  using index_type = typename loops::index_t<base_loop_type>;
+  using reference = typename loops::reference_t<base_loop_type>;
 
   template <typename Base>
   constexpr pass_through_view(Base&& b, Callable&& c)
-      : _base(std::forward<Base>(b)), _call(std::forward<Callable>(c)) {
-    static_assert(is_loop_v<base_loop_type>,
-                  "Base loop for filter is not a elixir loop");
-  }
+      : _base(std::forward<Base>(b)), _call(std::forward<Callable>(c)) {}
 
   index_type iter() noexcept { return ::elixir::loops::iter(_base); }
 

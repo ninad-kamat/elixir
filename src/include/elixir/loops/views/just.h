@@ -3,31 +3,24 @@
 
 #include "elixir/base/config.h"
 #include "elixir/loops/detail/operations.h"
+#include "elixir/loops/detail/sequence_traits.h"
 
 namespace elixir {
 namespace loops {
 
-template <typename Range, class Enable = void>
-class just_view;
-
-template <typename Range>
-struct is_loop<just_view<Range>> : public std::true_type {};
-
-template <typename Range>
-class just_view<
-    Range, typename std::enable_if<is_contiguous_sequence_v<Range>>::type> {
+template <typename S, typename Traits = sequence_traits<S>>
+  requires sequence<S>
+class just_view {
  public:
-  using base = Range;
-  using traits = range_traits<base>;
-  using value_type = typename traits::value_type;
-  using reference = typename traits::reference;
-  using pointer = typename traits::pointer;
-  using index_type = typename traits::index_type;
-  static constexpr bool reversible_v = true;
+  using base = S;
+  using traits = Traits;
+  using index_type = decltype(traits::iter(std::declval<base&>()));
+  using reference = decltype(traits::deref(std::declval<base&>(),
+                                           std::declval<index_type>()));
 
   constexpr just_view(base& b) noexcept : _base(b) {}
 
-  constexpr index_type iter() noexcept(noexcept(traits::iter(_base))) {
+  constexpr auto iter() noexcept(noexcept(traits::iter(_base))) {
     return traits::iter(_base);
   }
 
@@ -36,13 +29,12 @@ class just_view<
     return traits::valid(_base, i);
   }
 
-  constexpr reference deref(index_type i) noexcept(noexcept(traits::deref(_base,
-                                                                          i))) {
+  constexpr auto deref(index_type i) noexcept(noexcept(traits::deref(_base,
+                                                                     i))) {
     return traits::deref(_base, i);
   }
 
-  constexpr index_type next(index_type i) noexcept(noexcept(traits::next(_base,
-                                                                         i))) {
+  constexpr auto next(index_type i) noexcept(noexcept(traits::next(_base, i))) {
     return traits::next(_base, i);
   }
 

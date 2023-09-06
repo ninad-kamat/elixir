@@ -2,7 +2,6 @@
 #define ELIXIR_LOOPS_OPERATIONS
 
 #include "elixir/base/config.h"
-#include "elixir/loops/detail/traits.h"
 
 namespace elixir {
 namespace loops {
@@ -90,6 +89,20 @@ struct loop_until_fn {
   }
 };
 
+template <typename Loop>
+constexpr auto size(Loop&& l) noexcept(noexcept(std::forward<Loop>(l).size()))
+    -> decltype(std::forward<Loop>(l).size()) {
+  return std::forward<Loop>(l).size();
+}
+
+struct size_fn {
+  template <typename Loop>
+  constexpr auto operator()(Loop& l) const
+      noexcept(noexcept(size(std::forward<Loop>(l))))
+          -> decltype(size(std::forward<Loop>(l))) {
+    return size(std::forward<Loop>(l));
+  }
+};
 }  // namespace __impl
 
 constexpr auto iter = __impl::iter_fn{};
@@ -97,7 +110,9 @@ constexpr auto valid = __impl::valid_fn{};
 constexpr auto deref = __impl::deref_fn{};
 constexpr auto next = __impl::next_fn{};
 constexpr auto loop_until = __impl::loop_until_fn{};
+constexpr auto size = __impl::size_fn{};
 
 }  // namespace loops
 }  // namespace elixir
+
 #endif

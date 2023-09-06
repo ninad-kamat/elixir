@@ -2,6 +2,7 @@
 #define ELIXIR_LOOPS_RANGE_ADAPTOR
 
 #include "elixir/base/config.h"
+#include "elixir/loops/detail/concepts.h"
 #include "elixir/loops/detail/operations.h"
 
 #include <iterator>
@@ -11,28 +12,21 @@ namespace loops {
 
 struct default_sentinel {};
 
-template <typename Range>
-class range_adaptor;
-
-template <typename Range>
-struct is_loop<range_adaptor<Range>> : public std::true_type {};
-
 /**
  * @brief Iterator adaptor for C++17 range-based for loop
  *
  */
 template <typename Loop>
+  requires loop<Loop>
 class range_iterator {
  public:
   using loop_type = Loop;
-  using traits = loop_traits<Loop>;
-  using index_type = typename traits::index_type;
-
-  using reference = typename traits::reference;
-  using value_type = typename traits::value_type;
-  using pointer = typename traits::pointer;
+  using index_type = typename loops::index_t<loop_type>;
+  using reference = typename loops::reference_t<loop_type>;
   using difference_type = std::ptrdiff_t;
-  using iterator_category = std::input_iterator_tag;
+  using iterator_category =
+      std::input_iterator_tag;  // TODO: find a better way of getting iterator
+                                // category using concepts
 
   constexpr range_iterator(Loop& l) noexcept
       : _base(std::addressof(l)), _idx(::elixir::loops::iter(l)) {}
@@ -84,22 +78,17 @@ class range_iterator {
 };
 
 template <typename Loop>
+  requires loop<Loop>
 class range_adaptor {
  public:
   using base_loop_type = Loop;
-  using traits = loop_traits<base_loop_type>;
-  using index_type = typename traits::index_type;
-  using value_type = typename traits::value_type;
-  using reference = typename traits::reference;
-  using pointer = typename traits::pointer;
+  using index_type = typename loops::index_t<base_loop_type>;
+  using reference = typename loops::reference_t<base_loop_type>;
   using iterator = range_iterator<base_loop_type>;
   using sentinel = default_sentinel;
 
   template <typename Base>
-  constexpr range_adaptor(Base&& l) noexcept : _base(std::forward<Base>(l)) {
-    static_assert(is_loop_v<base_loop_type>,
-                  "Base loop for filter is not a elixir loop");
-  }
+  constexpr range_adaptor(Base&& l) noexcept : _base(std::forward<Base>(l)) {}
 
   constexpr iterator begin() noexcept { return iterator(_base); }
   constexpr sentinel end() noexcept { return default_sentinel{}; }

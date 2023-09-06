@@ -3,33 +3,23 @@
 
 #include "elixir/base/config.h"
 #include "elixir/base/std/functional.h"
+#include "elixir/loops/detail/concepts.h"
 #include "elixir/loops/detail/operations.h"
 
 namespace elixir {
 namespace loops {
 
 template <typename Loop, typename Map>
-class transform_view;
-
-template <typename Loop, typename Map>
-struct is_loop<transform_view<Loop, Map>> : public std::true_type {};
-
-template <typename Loop, typename Map>
+  requires loop<Loop>
 class transform_view {
  public:
   using base_loop_type = Loop;
   using transform_type = Map;
-  using traits = loop_traits<base_loop_type>;
-  using reference = compat::invoke_result_t<Map, typename traits::reference>;
-  using value_type = typename std::remove_reference<reference>::type;
-  using pointer = typename std::add_pointer<value_type>::type;
-  using index_type = typename traits::index_type;
+  using index_type = typename loops::index_t<base_loop_type>;
+  using reference = typename loops::reference_t<base_loop_type>;
 
   constexpr transform_view(Loop&& l, Map&& m) noexcept
-      : _base(std::forward<Loop>(l)), _map(std::forward<Map>(m)) {
-    static_assert(is_loop_v<Loop>,
-                  "Base loop for transform is not a elixir loop");
-  }
+      : _base(std::forward<Loop>(l)), _map(std::forward<Map>(m)) {}
 
   constexpr index_type iter() noexcept { return ::elixir::loops::iter(_base); }
 

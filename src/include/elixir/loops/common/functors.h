@@ -5,8 +5,8 @@ namespace elixir {
 namespace __impl {
 
 template <typename Predicate>
-struct not_closure {
-  constexpr not_closure(Predicate&& p) noexcept
+struct not_fn_closure {
+  constexpr not_fn_closure(Predicate&& p) noexcept
       : _pred(std::forward<Predicate>(p)) {}
 
   template <typename... Args>
@@ -19,8 +19,8 @@ struct not_closure {
 
 struct not_fn {
   template <typename Predicate>
-  constexpr not_closure<Predicate> operator()(Predicate&& p) const noexcept {
-    return not_closure<Predicate>(std::forward<Predicate>(p));
+  constexpr not_fn_closure<Predicate> operator()(Predicate&& p) const noexcept {
+    return not_fn_closure<Predicate>(std::forward<Predicate>(p));
   }
 };
 
@@ -40,7 +40,7 @@ struct always_false_fn {
 
 }  // namespace __impl
 
-constexpr auto make_not = __impl::not_fn{};
+constexpr auto not_fn = __impl::not_fn{};
 constexpr auto always_true = __impl::always_true_fn{};
 constexpr auto always_false = __impl::always_false_fn{};
 
